@@ -110,7 +110,7 @@ const builder = new HtmlBuilder({
 - `validateAttributes?: boolean`: When `true`, validates attributes to prevent potentially unsafe values. Defaults to `true`.
 - `customVoidTags?: Set<string>`: A set of additional void tags to be recognized beyond the HTML5 standard.
 
-**Example: Proper escapeContent Usage**
+### Example: Proper escapeContent Usage
 
 ```typescript
 // SSR: Escaping user content, but not markup or scripts
