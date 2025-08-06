@@ -1,0 +1,54 @@
+{
+  "name": "html-builder",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript library for creating HTML elements in both SSR and client-side environments",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run build:cjs && npm run build:types",
+    "build:cjs": "tsc --outDir dist --target es2018 --module commonjs",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "example:basic": "npm run build && node dist/examples/basic-usage.js",
+    "example:client": "npm run build && node dist/examples/client-side.js",
+    "verify": "npm run build && node verify.js",
+    "lint": "echo \"No linting configured\"",
+    "test": "echo \"No tests configured\"",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "html",
+    "builder",
+    "ssr",
+    "client-side",
+    "typescript",
+    "zero-dependency",
+    "dom",
+    "html-generation",
+    "universal",
+    "isomorphic"
+  ],
+  "author": "Tolu Adegbehingbe",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toluadegbehingbe/html-builder.git"
+  },
+  "homepage": "https://github.com/toluadegbehingbe/html-builder#readme",
+  "bugs": {
+    "url": "https://github.com/toluadegbehingbe/html-builder/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.0",
+    "typescript": "^5.9.2"
+  }
+}
