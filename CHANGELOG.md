@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of HTML Builder
+- Initial release of Element Crafter
 - Universal HTML generation for SSR and client-side environments
 - Type-safe element creation with TypeScript support
 - Built-in XSS protection with HTML escaping

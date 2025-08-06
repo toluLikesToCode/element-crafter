@@ -1,5 +1,5 @@
 {
-  "name": "html-builder",
+  "name": "element-crafter",
   "version": "1.0.0",
   "description": "A zero-dependency TypeScript library for creating HTML elements in both SSR and client-side environments",
   "main": "dist/index.js",
@@ -38,11 +38,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/toluadegbehingbe/html-builder.git"
+    "url": "https://github.com/toluLikesToCode/element-crafter.git"
   },
-  "homepage": "https://github.com/toluadegbehingbe/html-builder#readme",
+  "homepage": "https://github.com/toluLikesToCode/element-crafter#readme",
   "bugs": {
-    "url": "https://github.com/toluadegbehingbe/html-builder/issues"
+    "url": "https://github.com/toluLikesToCode/element-crafter/issues"
   },
   "engines": {
     "node": ">=14.0.0"

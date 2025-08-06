@@ -1,4 +1,4 @@
-# HTML Builder
+# Element Crafter
 
 A zero-dependency TypeScript library for creating HTML elements in both server-side rendering (SSR) and client-side environments.
 
@@ -14,7 +14,7 @@ A zero-dependency TypeScript library for creating HTML elements in both server-s
 ## Installation
 
 ```bash
-npm install html-builder
+npm install element-crafter
 ```
 
 ## Quick Start
@@ -22,7 +22,7 @@ npm install html-builder
 ### Server-Side Rendering (SSR)
 
 ```typescript
-import { createSSRBuilder } from "html-builder";
+import { createSSRBuilder } from "element-crafter";
 
 const builder = createSSRBuilder();
 
@@ -42,7 +42,7 @@ console.log(html);
 ### Client-Side Rendering
 
 ```typescript
-import { createClientBuilder } from "html-builder";
+import { createClientBuilder } from "element-crafter";
 
 const builder = createClientBuilder();
 
@@ -162,7 +162,7 @@ const clientBuilder = createClientBuilder({
 Creates a complete HTML document.
 
 ```typescript
-import { PageBuilder } from "html-builder";
+import { PageBuilder } from "element-crafter";
 
 const html = PageBuilder.buildPage({
   title: "My App",
