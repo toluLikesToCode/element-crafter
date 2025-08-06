@@ -6,7 +6,11 @@ yarn-error.log*
 
 # Build outputs
 dist/
+dist-examples/
 *.tsbuildinfo
+
+# Package artifacts
+*.tgz
 
 # Environment variables
 .env

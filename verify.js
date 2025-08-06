@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Simple verification script for the html-builder package
+ * Simple verification script for the element-crafter package
  */
 
 const {
@@ -9,9 +9,9 @@ const {
   createSSRBuilder,
   createClientBuilder,
   PageBuilder,
-} = require("./dist/src/index");
+} = require("./dist/index.js");
 
-console.log("🧪 HTML Builder Package Verification\n");
+console.log("🧪 Element Crafter Package Verification\n");
 
 try {
   // Test SSR Builder

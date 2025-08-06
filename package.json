@@ -5,21 +5,25 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist",
+    "dist/*.js",
+    "dist/*.d.ts",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:cjs && npm run build:types",
-    "build:cjs": "tsc --outDir dist --target es2018 --module commonjs",
-    "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "clean": "rm -rf dist",
+    "build": "npm run build:prod",
+    "build:dev": "npm run clean && npm run build:cjs:dev && npm run build:types:dev",
+    "build:prod": "npm run clean && npm run build:cjs:prod && npm run build:types:prod",
+    "build:cjs:dev": "tsc --outDir dist --target es2018 --module commonjs --sourceMap true --removeComments false",
+    "build:cjs:prod": "tsc --outDir dist --target es2018 --module commonjs --sourceMap false --removeComments true",
+    "build:types:dev": "tsc --emitDeclarationOnly --outDir dist --declarationMap true",
+    "build:types:prod": "tsc --emitDeclarationOnly --outDir dist --declarationMap false",
+    "build:examples": "tsc --project tsconfig.examples.json",
+    "clean": "rm -rf dist dist-examples",
     "dev": "tsc --watch",
-    "example:basic": "npm run build && node dist/examples/basic-usage.js",
-    "example:client": "npm run build && node dist/examples/client-side.js",
+    "example:basic": "npm run build:examples && node dist-examples/examples/basic-usage.js",
+    "example:client": "npm run build:examples && node dist-examples/examples/client-side.js",
     "verify": "npm run build && node verify.js",
-    "lint": "echo \"No linting configured\"",
-    "test": "echo \"No tests configured\"",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
@@ -44,6 +48,7 @@
   "bugs": {
     "url": "https://github.com/toluLikesToCode/element-crafter/issues"
   },
+  "sideEffects": false,
   "engines": {
     "node": ">=14.0.0"
   },

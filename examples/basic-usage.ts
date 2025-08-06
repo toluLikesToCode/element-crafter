@@ -9,7 +9,7 @@ import {
 // Basic Usage Examples
 // =============================================================================
 
-console.log("HTML Builder Examples\n");
+console.log("Element Crafter Examples\n");
 
 // Server-Side Rendering Example
 console.log("1. Server-Side Rendering (SSR):");

@@ -7,7 +7,7 @@ import { createClientBuilder } from "../src/index";
 // This example demonstrates how to use the HTML builder in a browser environment
 // Note: This would typically run in a browser, but we'll show the structure
 
-console.log("Client-Side HTML Builder Example\n");
+console.log("Client-Side Element Crafter Example\n");
 
 // Check if we're in a browser environment
 if (typeof document !== "undefined") {
