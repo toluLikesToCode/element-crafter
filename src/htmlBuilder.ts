@@ -1,25 +1,3 @@
-/**
- * Universal HTML Builder Module
- *
- * @remarks
- * This module provides a unified interface for generating HTML content in both
- * server-side rendering (SSR) and client-side environments. It includes utilities
- * for creating DOM elements, managing attributes, and building complex UI components.
- *
- * Key features:
- * - Universal rendering (SSR/Client)
- * - Type-safe element creation
- * - Attribute validation and sanitization
- * - Component-based architecture
- * - Performance optimizations
- *
- * @example
- * ```typescript
- * const builder = new HtmlBuilder({ isSsr: true });
- * const element = builder.createElement('div', { class: 'container' }, 'Hello World');
- * ```
- */
-
 // =============================================================================
 // Core Types and Interfaces
 // =============================================================================
@@ -279,8 +257,20 @@ export class HtmlBuilder {
   private processContent(content: unknown, escapeContent: boolean): string {
     if (content == null) return "";
 
+    // Check for already-escaped content (from createText)
+    if (
+      typeof content === "object" &&
+      content !== null &&
+      (content as any).__escaped === true
+    ) {
+      return (content as any).value;
+    }
+
     if (typeof content === "string") {
-      return escapeContent ? HtmlBuilder.escapeHtml(content) : content;
+      if (this.config.isSsr && escapeContent) {
+        return HtmlBuilder.escapeHtml(content);
+      }
+      return content;
     }
 
     if (typeof content === "number") {
@@ -288,10 +278,8 @@ export class HtmlBuilder {
     }
 
     if (this.config.isSsr) {
-      // In SSR mode, convert everything to string
       return String(content);
     } else {
-      // In client mode, handle DOM nodes
       if (content instanceof Node) {
         return content.textContent || "";
       }
@@ -408,11 +396,17 @@ export class HtmlBuilder {
    * @param escape - Whether to escape the text
    * @returns Text node or escaped string
    */
-  public createText(text: string, escape = true): Text | string {
-    const content = escape ? HtmlBuilder.escapeHtml(text) : text;
-
+  public createText(
+    text: string,
+    escape = true
+  ): Text | string | { __escaped: true; value: string } {
     if (this.config.isSsr) {
-      return content;
+      if (escape) {
+        // Mark as already escaped
+        return { __escaped: true, value: HtmlBuilder.escapeHtml(text) };
+      } else {
+        return text;
+      }
     } else {
       return document.createTextNode(text); // Don't escape for text nodes
     }
