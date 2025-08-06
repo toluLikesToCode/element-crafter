@@ -36,7 +36,15 @@ export type RenderableContent =
 export interface BuilderConfig {
   /** Whether to generate SSR-compatible HTML strings */
   isSsr: boolean;
-  /** Whether to escape HTML content by default */
+  /**
+   * Whether to escape HTML content by default.
+   *
+   * @remarks
+   * - For SSR, set to `true` to escape all content by default (prevents XSS).
+   * - For client-side, set to `false` if you trust the content source (DOM APIs are safe).
+   * - For SSR, you should set `escapeContent: false` for elements containing raw HTML, CSS, or JS (e.g., <style>, <script>, or markup fragments).
+   * - Always escape user-generated content, but do NOT escape markup, CSS, or JS code.
+   */
   escapeContent?: boolean;
   /** Whether to validate attributes */
   validateAttributes?: boolean;
@@ -48,7 +56,14 @@ export interface BuilderConfig {
  * Options for creating HTML elements.
  */
 export interface CreateElementOptions {
-  /** Whether to escape the content of this specific element */
+  /**
+   * Whether to escape the content of this specific element.
+   *
+   * @remarks
+   * - For SSR, set to `false` for elements containing raw HTML, CSS, or JS (e.g., <style>, <script>, or markup fragments).
+   * - For user-generated content, set to `true` to prevent XSS.
+   * - For client-side, escaping is usually not needed (DOM APIs are safe).
+   */
   escapeContent?: boolean;
   /** Whether to validate attributes for this specific element */
   validateAttributes?: boolean;

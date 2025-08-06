@@ -103,9 +103,43 @@ const builder = new HtmlBuilder({
 #### Configuration Options
 
 - `isSsr: boolean`: Determines whether to generate HTML strings (for SSR) or DOM elements (for the client).
-- `escapeContent?: boolean`: When `true`, escapes HTML content by default to prevent XSS attacks. Defaults to `true`.
+- `escapeContent?: boolean`:
+  - **SSR:** Set to `true` to escape all content by default (prevents XSS). Set to `false` for elements containing raw HTML, CSS, or JS (e.g., `<style>`, `<script>`, or markup fragments).
+  - **Client-side:** Set to `false` if you trust the content source (DOM APIs are safe).
+  - **Best Practice:** Always escape user-generated content, but do NOT escape markup, CSS, or JS code. Use the `escapeContent` option on individual elements to override the default for specific cases.
 - `validateAttributes?: boolean`: When `true`, validates attributes to prevent potentially unsafe values. Defaults to `true`.
 - `customVoidTags?: Set<string>`: A set of additional void tags to be recognized beyond the HTML5 standard.
+
+**Example: Proper escapeContent Usage**
+
+```typescript
+// SSR: Escaping user content, but not markup or scripts
+const builder = createSSRBuilder({ escapeContent: true });
+
+// Markup should NOT be escaped
+const styleTag = builder.createElement(
+  "style",
+  {},
+  { escapeContent: false },
+  "body { color: red; }"
+);
+const scriptTag = builder.createElement(
+  "script",
+  {},
+  { escapeContent: false },
+  'console.log("Hello!");'
+);
+
+// User content SHOULD be escaped
+const userContent = builder.createElement(
+  "div",
+  {},
+  undefined,
+  builder.createText(userInput, true)
+);
+```
+
+**Tip:** If you see HTML tags, CSS, or JS code being escaped in your output, set `escapeContent: false` for those elements.
 
 ### Methods
 
