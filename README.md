@@ -104,31 +104,22 @@ const builder = new HtmlBuilder({
 
 - `isSsr: boolean`: Determines whether to generate HTML strings (for SSR) or DOM elements (for the client).
 - `escapeContent?: boolean`:
-  - **SSR:** Set to `true` to escape all content by default (prevents XSS). Set to `false` for elements containing raw HTML, CSS, or JS (e.g., `<style>`, `<script>`, or markup fragments).
-  - **Client-side:** Set to `false` if you trust the content source (DOM APIs are safe).
-  - **Best Practice:** Always escape user-generated content, but do NOT escape markup, CSS, or JS code. Use the `escapeContent` option on individual elements to override the default for specific cases.
+  - **Smart default behavior:** Tags like `script`, `style`, `pre`, `code`, and `textarea` automatically do NOT escape their content.
+  - **SSR:** Typically `true` to escape user content by default (XSS protection). You can still override per element via the `escapeContent` option.
+  - **Client-side:** Can be `false` if you trust the content source (DOM APIs are safe).
+  - **Best Practice:** Always escape user-generated content. Markup, CSS, or JS inside the tags above will not be escaped by default.
 - `validateAttributes?: boolean`: When `true`, validates attributes to prevent potentially unsafe values. Defaults to `true`.
 - `customVoidTags?: Set<string>`: A set of additional void tags to be recognized beyond the HTML5 standard.
 
-### Example: Proper escapeContent Usage
+### Example: escapeContent Usage (with smart auto-escaping)
 
 ```typescript
 // SSR: Escaping user content, but not markup or scripts
 const builder = createSSRBuilder({ escapeContent: true });
 
-// Markup should NOT be escaped
-const styleTag = builder.createElement(
-  "style",
-  {},
-  { escapeContent: false },
-  "body { color: red; }"
-);
-const scriptTag = builder.createElement(
-  "script",
-  {},
-  { escapeContent: false },
-  'console.log("Hello!");'
-);
+// No need to disable escaping for style/script anymore — handled automatically
+const styleTag = builder.createElement("style", {}, undefined, "body { color: red; }");
+const scriptTag = builder.createElement("script", {}, undefined, 'console.log("Hello!");');
 
 // User content SHOULD be escaped
 const userContent = builder.createElement(
@@ -139,7 +130,7 @@ const userContent = builder.createElement(
 );
 ```
 
-**Tip:** If you see HTML tags, CSS, or JS code being escaped in your output, set `escapeContent: false` for those elements.
+**Tip:** If you need to force a behavior, use the per-element `escapeContent` option. Explicit options always override the smart default.
 
 ### Methods
 

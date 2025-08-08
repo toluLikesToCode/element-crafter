@@ -42,8 +42,9 @@ export interface BuilderConfig {
    * @remarks
    * - For SSR, set to `true` to escape all content by default (prevents XSS).
    * - For client-side, set to `false` if you trust the content source (DOM APIs are safe).
-   * - For SSR, you should set `escapeContent: false` for elements containing raw HTML, CSS, or JS (e.g., <style>, <script>, or markup fragments).
-   * - Always escape user-generated content, but do NOT escape markup, CSS, or JS code.
+   * - Smart escaping: Tags like `script`, `style`, `pre`, `code`, and `textarea` automatically disable escaping regardless of this setting.
+   * - You can override escaping behavior for specific elements using the `escapeContent` option in `CreateElementOptions`.
+   * - Always escape user-generated content, but markup, CSS, or JS code is automatically handled correctly.
    */
   escapeContent?: boolean;
   /** Whether to validate attributes */
@@ -60,9 +61,10 @@ export interface CreateElementOptions {
    * Whether to escape the content of this specific element.
    *
    * @remarks
-   * - For SSR, set to `false` for elements containing raw HTML, CSS, or JS (e.g., <style>, <script>, or markup fragments).
+   * - Overrides the global `escapeContent` setting for this element.
+   * - For SSR, set to `false` for elements containing raw HTML, CSS, or JS.
    * - For user-generated content, set to `true` to prevent XSS.
-   * - For client-side, escaping is usually not needed (DOM APIs are safe).
+   * - Note: Tags like `script`, `style`, `pre`, `code`, and `textarea` automatically disable escaping unless explicitly overridden.
    */
   escapeContent?: boolean;
   /** Whether to validate attributes for this specific element */
@@ -132,6 +134,17 @@ export class HtmlBuilder {
     "selected",
   ]);
 
+  /** Tags that typically contain raw content and should not be escaped by default */
+  private static readonly NO_ESCAPE_TAGS = new Set([
+    "script",
+    "style",
+    "pre",
+    "code",
+    "textarea",
+    "noscript",
+    "xmp",
+  ]);
+
   /**
    * Creates a new HTML builder instance.
    *
@@ -177,6 +190,37 @@ export class HtmlBuilder {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  /**
+   * Determines whether content should be escaped based on tag name and explicit options.
+   *
+   * @param tagName - HTML tag name
+   * @param explicitEscape - Explicit escape option from CreateElementOptions
+   * @returns Whether content should be escaped
+   *
+   * @remarks
+   * This method implements smart tag-based auto-escaping:
+   * - Explicit options always take precedence
+   * - Tags like script, style, pre, code automatically disable escaping
+   * - Other tags use the global escapeContent setting
+   */
+  private shouldEscapeContent(
+    tagName: string,
+    explicitEscape?: boolean
+  ): boolean {
+    // Explicit override always wins
+    if (explicitEscape !== undefined) {
+      return explicitEscape;
+    }
+
+    // Auto-disable escaping for tags that typically contain raw content
+    if (HtmlBuilder.NO_ESCAPE_TAGS.has(tagName.toLowerCase())) {
+      return false;
+    }
+
+    // Use global default for other tags
+    return this.config.escapeContent;
   }
 
   /**
@@ -339,7 +383,10 @@ export class HtmlBuilder {
     children: RenderableContent[] = []
   ): string {
     const attrs = attributes || {};
-    const opts = { ...this.config, ...options };
+    const shouldEscape = this.shouldEscapeContent(
+      tagName,
+      options?.escapeContent
+    );
 
     const attributeString = this.buildAttributeString(attrs);
     const isVoid = this.voidTags.has(tagName.toLowerCase());
@@ -350,7 +397,7 @@ export class HtmlBuilder {
 
     const flatChildren = this.flattenContent(children);
     const childContent = flatChildren
-      .map((child) => this.processContent(child, opts.escapeContent))
+      .map((child) => this.processContent(child, shouldEscape))
       .join("");
 
     return `<${tagName}${attributeString}>${childContent}</${tagName}>`;
@@ -367,7 +414,10 @@ export class HtmlBuilder {
   ): HTMLElementTagNameMap[K] {
     const element = document.createElement(tagName);
     const attrs = attributes || {};
-    const opts = { ...this.config, ...options };
+    const shouldEscape = this.shouldEscapeContent(
+      tagName as string,
+      options?.escapeContent
+    );
 
     // Set attributes
     for (const [name, value] of Object.entries(attrs)) {
@@ -394,7 +444,7 @@ export class HtmlBuilder {
       if (child instanceof Node) {
         element.appendChild(child);
       } else if (child != null) {
-        const textContent = this.processContent(child, opts.escapeContent);
+        const textContent = this.processContent(child, shouldEscape);
         if (textContent) {
           element.appendChild(document.createTextNode(textContent));
         }

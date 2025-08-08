@@ -1,12 +1,17 @@
 {
   "name": "element-crafter",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A zero-dependency TypeScript library for creating HTML elements in both SSR and client-side environments",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
-    "dist/*.js",
-    "dist/*.d.ts",
+    "dist/**",
     "README.md",
     "LICENSE"
   ],
@@ -24,7 +29,9 @@
     "example:basic": "npm run build:examples && node dist-examples/examples/basic-usage.js",
     "example:client": "npm run build:examples && node dist-examples/examples/client-side.js",
     "verify": "npm run build && node verify.js",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "pack:dry": "npm pack --dry-run",
+    "size": "npm run build && npm pack --dry-run | cat"
   },
   "keywords": [
     "html",

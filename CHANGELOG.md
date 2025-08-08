@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-08-08
+
+### Added
+
+- **Smart Tag-Based Auto-Escaping**: Automatically determines whether to escape content based on HTML tag type.
+  - Tags like `script`, `style`, `pre`, `code`, `textarea`, `noscript`, and `xmp` now automatically disable escaping.
+  - Reduces cognitive load and prevents common mistakes when working with CSS, JavaScript, and raw HTML content.
+  - Explicit `escapeContent` options still take precedence when specified.
+
+### Changed
+
+- Updated documentation to reflect new smart escaping behavior.
+- Improved user experience by eliminating the need to manually disable escaping for common raw content tags.
+
 ## [1.0.1] - 2025-08-05
 
 ### Fixed
