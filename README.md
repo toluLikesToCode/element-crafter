@@ -118,8 +118,18 @@ const builder = new HtmlBuilder({
 const builder = createSSRBuilder({ escapeContent: true });
 
 // No need to disable escaping for style/script anymore — handled automatically
-const styleTag = builder.createElement("style", {}, undefined, "body { color: red; }");
-const scriptTag = builder.createElement("script", {}, undefined, 'console.log("Hello!");');
+const styleTag = builder.createElement(
+  "style",
+  {},
+  undefined,
+  "body { color: red; }"
+);
+const scriptTag = builder.createElement(
+  "script",
+  {},
+  undefined,
+  'console.log("Hello!");'
+);
 
 // User content SHOULD be escaped
 const userContent = builder.createElement(
