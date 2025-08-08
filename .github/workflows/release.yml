@@ -1,0 +1,45 @@
+name: Release Checks
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: NPM pack (dry run)
+        run: npm pack --dry-run
+
+      - name: Verify packed contents
+        run: |
+          mkdir -p .pack
+          npm pack --pack-destination ./.pack --dry-run > .pack/pack.out 2>&1 || true
+          echo 'Packed files:'
+          sed -n '/Tarball Contents/,$p' .pack/pack.out
+          # Basic checks for expected files
+          grep -q "dist/index.js" .pack/pack.out
+          grep -q "dist/index.d.ts" .pack/pack.out
+          grep -q "dist/htmlBuilder.js" .pack/pack.out
+          grep -q "dist/htmlBuilder.d.ts" .pack/pack.out
+          grep -q "README.md" .pack/pack.out
+          grep -q "LICENSE" .pack/pack.out
