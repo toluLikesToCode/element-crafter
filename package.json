@@ -49,11 +49,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/toluLikesToCode/html-builder.git"
+    "url": "https://github.com/toluLikesToCode/element-crafter.git"
   },
-  "homepage": "https://github.com/toluLikesToCode/html-builder#readme",
+  "homepage": "https://github.com/toluLikesToCode/element-crafter#readme",
   "bugs": {
-    "url": "https://github.com/toluLikesToCode/html-builder/issues"
+    "url": "https://github.com/toluLikesToCode/element-crafter/issues"
   },
   "sideEffects": false,
   "engines": {
