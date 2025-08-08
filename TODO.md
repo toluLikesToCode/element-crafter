@@ -177,3 +177,66 @@ const builder = createSSRBuilder({ debug: true });
 - Security features take priority over convenience features
 - User feedback should guide implementation priority
 - Performance impact should be measured for all changes
+
+---
+
+## 🔐 Branch Protection & Release Automation (Next Steps)
+
+1. Protect `main` branch and require CI to pass before merging
+
+   - GitHub Settings → Branches → Add branch protection rule → Branch name pattern: `main`
+   - Require status checks to pass before merging: enable and select `Release Checks / build-and-pack`
+   - Require pull request reviews before merging: enable (suggest 1–2 approvals)
+   - Include administrators: optional but recommended
+
+2. Add automated publish job for tags
+   - In GitHub → Settings → Secrets and variables → Actions → New repository secret
+   - Create `NPM_TOKEN` with publish access for the `element-crafter` package
+   - Extend `.github/workflows/release.yml` with a `publish-on-tag` job:
+
+```yaml
+publish-on-tag:
+  if: startsWith(github.ref, 'refs/tags/v')
+  needs: build-and-pack
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        registry-url: https://registry.npmjs.org
+        cache: "npm"
+    - run: npm ci
+    - run: npm run build
+    - name: Publish to npm
+      run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+3. Changelog-only GitHub Release notes
+   - Use shorter release notes derived from the `CHANGELOG.md` section for the tag.
+   - Option A: Keep `gh release create vX.Y.Z --notes "$(script to extract section)"`
+   - Option B: Add a GitHub Actions step to generate concise notes:
+
+```yaml
+- name: Generate concise release notes
+  id: notes
+  run: |
+    VERSION=${GITHUB_REF#refs/tags/}
+    awk "/^## \[${VERSION#v}\]/,/^## /" CHANGELOG.md | sed '1d;$d' > RELEASE_NOTES.md || true
+    if [ ! -s RELEASE_NOTES.md ]; then echo "No notes found, using summary" > RELEASE_NOTES.md; fi
+- name: Create GitHub Release
+  uses: softprops/action-gh-release@v2
+  with:
+    tag_name: ${{ github.ref_name }}
+    name: ${{ github.ref_name }}
+    body_path: RELEASE_NOTES.md
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+4. Policy
+   - Only tags created from `main` are published
+   - PRs must pass `Release Checks` CI before merge
+   - Conventional commit messages for clean changelog generation (future improvement)
